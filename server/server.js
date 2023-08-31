@@ -10,6 +10,11 @@ import "dotenv/config";
 //important for __filename and __dirname
 import path from 'path';
 import {fileURLToPath} from 'url';
+
+// paypal setup
+import PAYPAL from "./js/paypal.js";
+const INTENT = PAYPAL.INTENT;
+const CURRENCY = PAYPAL.CURRENCY;
 // ------------------------------------------------------------------
 
 const SERVER = express();
@@ -27,7 +32,7 @@ const __dirname = path.dirname(__filename);
 // 'sendFile' not 'send' !!!
 SERVER.use(express.static(path.join(__dirname, "build")));
 SERVER.get('/*',function(req,res) {
-        res.sendFile(path.join(__dirname,'build','index.html'));
+        res.sendFile(path.join(__dirname,'build'/*,'index.html'*/));
 });
 // -------------------------------------------
 
@@ -36,6 +41,88 @@ sequelize.sync( )
 .then(() => console.log("Tabelle erstellt"))/**/
 
 // -------------------------------------------
+
+// paypal specific requests -------------------
+
+// GET_PAYPAL_ORDER_URL
+/*SERVER.get("/getOrderURL", (req, res) =>{
+    let url = PAYPAL.SDK_URL + "?client-id=" + PAYPAL.CLIENT_ID + "&enable-funding=venmo&currency=" + CURRENCY + "&intent=" + INTENT;
+    res.json({url});
+})*/
+
+// GET_OPTIONS_OBJECT
+SERVER.get("/getPaypalOptions", (req,res) => {
+    const Options = {
+        clientId: PAYPAL.CLIENT_ID,
+        currency: CURRENCY,
+        intent: INTENT,
+    };
+
+    res.send(Options);
+})
+
+// CREATE_ORDER_____
+SERVER.post('/create_order', async (req,res) => {
+    let shoppingCart = req.body.shoppingCartArray; //shoppingCart => [{id:1,amount:2},{id:2,amount:4},{id:3,amount:3},...]
+    let currency_code = CURRENCY; // same as CC in url
+
+    // create purchase Array
+    let purchaseArray =[];
+    let value;
+    let getPurchaseList = async function () { // array needed for determine price
+        shoppingCart.forEach( item => { // Switch für value; später aus DB holen
+            
+            switch (item.id) {
+                    case 1:
+                    value = 20.00;
+                    break;
+
+                    case 2:
+                    value = 15.00;
+                    break;
+
+                    case 3:
+                    value = 9.00;
+                    break;
+
+                    default:
+                    value = 10.00;
+                    break;
+                }
+            
+            let i = 0;
+            while (i < item.amount){
+                // reference_id needed for more than one purchase
+                // have to be unique
+                purchaseArray.push(
+                    {reference_id:  item.id + "_" + i,
+                    amount: {
+                                currency_code,
+                                value,
+                            }
+                    });
+                i++;
+            }
+        });       
+    };
+
+    await getPurchaseList();
+    let order = await PAYPAL.createOrder(purchaseArray,INTENT);
+    let id = order.id; // res for createOrder is already json
+    res.send({id}); // Only ID of the Response is needed in the Browser!
+})
+
+
+// GET_PAYMENT______
+// happens after the payment was approved and the popUp Window closes
+SERVER.post('/complete_order', async (req,res) => {
+
+    let orderID = req.body.orderID;
+    let payment = await PAYPAL.capturePayment(orderID,INTENT);
+    res.send(payment); // res from capturePayment is already json
+})
+
+//---------------------------------------------
 
 
 // Server Start -------------------------
