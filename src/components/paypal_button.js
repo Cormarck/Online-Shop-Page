@@ -80,8 +80,8 @@ const {isLoading,data} = useFetch ("/getPaypalOptions"); // have to be named isL
                 <PayPalButtons
                     createOrder={createOrder}
                     onApprove={onApprove}
-                    /*onCancel={onCancel}
-                    onError={onError}*/
+                    onCancel={onCancel}
+                    onError={onError}
 
                 />
             </PayPalScriptProvider>
