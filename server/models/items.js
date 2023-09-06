@@ -37,7 +37,9 @@ export let Item = sequelize.define("items", {
             type: DataTypes.STRING,
             allowNull: false,
           },
-    
+    Material: {
+      
+    }
     */
     },
     {

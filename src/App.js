@@ -1,4 +1,4 @@
-import ItemWindow from "./components/item_window";
+import ItemRequest from "./components/item_array";
 
 
 function App({shoppingCart,shoppingCartFunctions}) {
@@ -9,7 +9,7 @@ function App({shoppingCart,shoppingCartFunctions}) {
       <button onClick={() => {shoppingCartFunctions.set(3,1)}}>add3</button>
       <button onClick={() => {shoppingCartFunctions.delete(1)}}>delete</button>
     
-    <ItemWindow/>
+    <ItemRequest category={'All'} subCategory={'All'}/>
     </>
   );
 }

@@ -1,16 +1,13 @@
-let ItemWindow = function () {
+let ItemWindow = function ({img_link,description,price}) {
     return (
         <div>
-            <img></img>
-            <p>Item-Id</p>
-            <p>Item-Kategorie</p>
-            <p>Item-Sub-Kategorie</p>
-            <p>Bezeichnung</p>
-            <p>Preis</p>
-            <p>Farben/Stil</p>
-            <p>Größen</p>
+            <img src={img_link} alt=""></img>
+            <p>{description}</p>
+            <p>{price}€</p>
         </div>
     )
 }
 
 export default ItemWindow;
+
+// image path determined from index.html!

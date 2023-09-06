@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 server/database.sqlite
+public/img/items/079.png
 /.pnp
 .pnp.js
 .env

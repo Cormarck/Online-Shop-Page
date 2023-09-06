@@ -13,6 +13,7 @@ import {fileURLToPath} from 'url';
 
 // paypal setup
 import PAYPAL from "./js/paypal.js";
+import { Item } from "./models/items.js";
 const INTENT = PAYPAL.INTENT;
 const CURRENCY = PAYPAL.CURRENCY;
 // ------------------------------------------------------------------
@@ -121,8 +122,28 @@ SERVER.post('/complete_order', async (req,res) => {
     let payment = await PAYPAL.capturePayment(orderID,INTENT);
     res.send(payment); // res from capturePayment is already json
 })
-
 //---------------------------------------------
+
+SERVER.post('/get_items', async (req,res) => {
+    let category = req.body.category;
+    let subCategory = req.body.subCategory;
+    console.log(category,subCategory);
+
+    let ItemArray = await Item.findAll({
+        where: (category !== 'All') ? {Category : category} : {},
+        raw:true,
+        attributes: ["Description","Price","Image_Link"]
+
+        // next add filter for sub category!
+    })
+
+    console.log(ItemArray)
+    
+    
+
+
+    res.json(ItemArray);
+} )
 
 
 // Server Start -------------------------
