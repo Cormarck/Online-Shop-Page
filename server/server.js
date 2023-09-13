@@ -127,21 +127,21 @@ SERVER.post('/complete_order', async (req,res) => {
 SERVER.post('/get_items', async (req,res) => {
     let category = req.body.category;
     let subCategory = req.body.subCategory;
-    console.log(category,subCategory);
 
     let ItemArray = await Item.findAll({
-        where: (category !== 'All') ? {Category : category} : {},
+        where: (category !== 'All') ? {categoryName : category} : {},
         raw:true,
-        attributes: ["Description","Price","Image_Link"]
+        attributes: ["Id","subCategoryName","Description","Price","Image_Link"]
 
         // next add filter for sub category!
     })
 
-    console.log(ItemArray)
+    if (subCategory !== 'All') {
+        let output = [];
+        ItemArray.forEach((item) => {if (item.subCategoryName === subCategory) {output.push(item)}});
+        ItemArray = output;
+    }
     
-    
-
-
     res.json(ItemArray);
 } )
 

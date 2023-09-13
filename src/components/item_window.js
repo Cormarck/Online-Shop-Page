@@ -1,6 +1,6 @@
-let ItemWindow = function ({img_link,description,price}) {
+let ItemWindow = function ({id,img_link,description,price}) {
     return (
-        <div>
+        <div className="itemWindow" id={id}>
             <img src={img_link} alt=""></img>
             <p>{description}</p>
             <p>{price}€</p>
