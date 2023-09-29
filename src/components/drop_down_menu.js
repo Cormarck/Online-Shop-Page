@@ -13,6 +13,7 @@ import { useState } from "react";
     }
     await getCategorys();
     // categoryAttay = [Test, Test2, Test3]
+    
 
     // - - -
     // get all sub categorys
@@ -30,14 +31,25 @@ import { useState } from "react";
 
 let DropDownMenu = function ({setCategory,setSubCategory}) {
 
-    let [word,setWord] = useState('Test');
-    let subWord ='All'
+    let [subCategoryDivArray,setSubCategoryDivArray] = useState([])
+
+    // creates Array with buttons to select a sub category
+    let filterSubCategory = function(filter) {
+        let filteredArray = [];
+        subCategoryArray.forEach(item => {if (item.categoryName === filter) {filteredArray.push(<div className="subCategory" key={item.Name} onClick={() => {setSubCategory(item.Name)}}>{item.Name}</div>)}});
+        console.log(filteredArray);
+        setSubCategoryDivArray([...filteredArray]);
+    }
+
+    // creates Array with buttons to select a category
+    let categoryDivArray = [];
+    categoryArray.forEach(item => {categoryDivArray.push(<div className="category" key={item} onClick={() => {setCategory(item); setSubCategory('All'); filterSubCategory(item)}}>{item}</div>)});
+
     return (
         <div>
-            <div className="categoryArray">{categoryArray}</div>
-            <div className="subCategoryArray">sub-categorys</div>
+            <div className="categoryArray">{categoryDivArray}</div>
+            <div className="subCategoryArray">{subCategoryDivArray}</div>
             <div onClick={() => {setCategory('All'); setSubCategory('All')}}>All</div>
-            <div onClick={() => {setCategory(word); setSubCategory(subWord)}}>Test Sub-Test</div>
         </div>
     )
 }
