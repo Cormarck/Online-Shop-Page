@@ -7,11 +7,11 @@ let ShoppingWindow = function () {
     let [category, setCategory] = useState('All');
     let [subCategory, setSubCategory] = useState('All');
 
-    let searchCategory = function(word) {setCategory(word)};
+    let searchCategory = function(word,subword) {setCategory(word); setSubCategory(subword)};
 
     return(
         <>
-        <DropDownMenu searchCategory={searchCategory}/>
+        <DropDownMenu setCategory={setCategory} setSubCategory={setSubCategory}/>
         <ItemRequest category={category} subCategory={subCategory}/>
         </>
         )

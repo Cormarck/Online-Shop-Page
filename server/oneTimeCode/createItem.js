@@ -6,16 +6,18 @@ Category.hasMany(Item);
 Item.belongsTo(Category);
 Sub_Category.hasMany(Item);
 Item.belongsTo(Sub_Category);
+Category.hasMany(Sub_Category);
+Sub_Category.belongsTo(Category);
 
 let createItem = async function () {
     let item = await Item.create( {
-            Description : "a Item for testing purpose",
+            Description : "Category: Test3  SubCategory: Sub-Test32 3rd",
             Price: 12.03,
             Image_Link: "/img/items/079.png"
         });
     let category = await Category.findOne({
             where: {
-                Name: "Test",
+                Name: "Test3",
             }
         });
     category.addItems(item);
@@ -23,22 +25,29 @@ let createItem = async function () {
 
     let subCategory = await Sub_Category.findOne({
             where: {
-                Name: "Sub-Test",
+                Name: "Sub-Test32",
             }
         });
     subCategory.addItems(item);
+    
 }
 
 let createCategory = function () {
     Category.create( {
-        Name: "Test",
+        Name: "Test3",
     })
 }
 
-let createSubCategory = function () {
-    Sub_Category.create( {
-        Name: "Sub-Test",
-    })
+let createSubCategory = async function () {
+    let subCategory = await Sub_Category.create( {
+        Name: "Sub-Test32",
+    });
+    let category = await Category.findOne({
+        where: {
+            Name: "Test3",
+        }
+    });
+    category.addSubCategorys(subCategory);
 }
 
 sequelize.sync({/*force: true*/})

@@ -11,11 +11,16 @@ import "dotenv/config";
 import path from 'path';
 import {fileURLToPath} from 'url';
 
+// Category Setup
+import {Category,Sub_Category} from "./models/category.js";
+
 // paypal setup
 import PAYPAL from "./js/paypal.js";
 import { Item } from "./models/items.js";
 const INTENT = PAYPAL.INTENT;
 const CURRENCY = PAYPAL.CURRENCY;
+
+
 // ------------------------------------------------------------------
 
 const SERVER = express();
@@ -145,6 +150,21 @@ SERVER.post('/get_items', async (req,res) => {
     res.json(ItemArray);
 } )
 
+SERVER.get('/getCategorys', async (req,res) =>{
+    let categoryArray = await Category.findAll ({
+        raw: true,
+        attributes: ["Name"]
+    });
+    res.json(categoryArray)
+} )
+
+SERVER.get('/getSubCategorys', async (req,res) => {
+    let subCategoryArray = await Sub_Category.findAll ({
+        raw: true,
+        attributes:["Name","categoryName"],
+    });
+    res.json(subCategoryArray)
+})
 
 // Server Start -------------------------
 SERVER.listen(PORT, IP, () => console.log(`http://${IP}:${PORT}`));

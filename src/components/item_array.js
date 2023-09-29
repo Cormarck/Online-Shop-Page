@@ -24,9 +24,8 @@ let ItemRequest = function ({category,subCategory}) {
 
 let ItemArray = function ({array}){
     // array is an array with objects
-    console.log(array);
     let collection= [];
-    array.forEach((item) => collection.push(<ItemWindow id={`Item_${item.Id}`} img_link={item.Image_Link} description={item.Description} price={item.Price}/>));
+    array.forEach((item) => collection.push(<ItemWindow key={`Item_${item.Id}`} id={`Item_${item.Id}`} img_link={item.Image_Link} description={item.Description} price={item.Price}/>));
     return (
         <div className="itemArray">
             {collection}
