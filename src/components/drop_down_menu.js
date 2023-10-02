@@ -1,4 +1,8 @@
 import { useState } from "react";
+import  "../css/categorySelect.css";
+
+let displayCategory = 'Kategorie';
+let displaySubCategory = 'Unter-Kategorie';
 
 // get -> all categorys
     // create dropdown with all categorys
@@ -36,20 +40,40 @@ let DropDownMenu = function ({setCategory,setSubCategory}) {
     // creates Array with buttons to select a sub category
     let filterSubCategory = function(filter) {
         let filteredArray = [];
-        subCategoryArray.forEach(item => {if (item.categoryName === filter) {filteredArray.push(<div className="subCategory" key={item.Name} onClick={() => {setSubCategory(item.Name)}}>{item.Name}</div>)}});
-        console.log(filteredArray);
+        filteredArray.push(<div onClick={() => {setSubCategory('All'); changeSubCategory('')}}>All</div>)
+        subCategoryArray.forEach(item => {if (item.categoryName === filter) {filteredArray.push(<div className="subCategory" key={item.Name} onClick={() => {setSubCategory(item.Name); changeSubCategory(item.Name)}}>{item.Name}</div>)}});
         setSubCategoryDivArray([...filteredArray]);
     }
 
     // creates Array with buttons to select a category
     let categoryDivArray = [];
-    categoryArray.forEach(item => {categoryDivArray.push(<div className="category" key={item} onClick={() => {setCategory(item); setSubCategory('All'); filterSubCategory(item)}}>{item}</div>)});
+    categoryDivArray.push(<div onClick={() => {setCategory('All'); setSubCategory('All'); setSubCategoryDivArray([]); changeCategory('')}}>All</div>)
+    categoryArray.forEach(item => {categoryDivArray.push(<div className="category" key={item} onClick={() => {setCategory(item); setSubCategory('All'); filterSubCategory(item); changeCategory(item)}}>{item}</div>)});
+
+    let showCategorys = function () {
+        let categoryDropDown = document.querySelector('.categoryArray');
+        categoryDropDown.classList.toggle('hide');
+    }
+
+    let showSubCategorys = function () {
+        let subCategoryDropDown = document.querySelector('.subCategoryArray');
+        subCategoryDropDown.classList.toggle('hide');
+    }
+
+    let changeCategory = function (word) {
+        let categoryDisplay = document.querySelector('#categoryDisplay');
+        categoryDisplay.innerHTML = `${displayCategory}: ${word}`;
+    }
+
+    let changeSubCategory = function (word) {
+        let subCategoryDisplay = document.querySelector('#subCategoryDisplay');
+        subCategoryDisplay.innerHTML = `${displaySubCategory}: ${word}`;
+    }
 
     return (
         <div>
-            <div className="categoryArray">{categoryDivArray}</div>
-            <div className="subCategoryArray">{subCategoryDivArray}</div>
-            <div onClick={() => {setCategory('All'); setSubCategory('All')}}>All</div>
+            <div id="choseCategory"><div id="categoryDisplay" onClick={() => {showCategorys()}}>{displayCategory}:</div><div className="categoryArray hide">{categoryDivArray}</div></div>
+            <div id="choseSubCategory"><div id="subCategoryDisplay" onClick={() => {showSubCategorys()}}>{displaySubCategory}:</div><div className="subCategoryArray">{subCategoryDivArray}</div></div>
         </div>
     )
 }

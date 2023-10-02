@@ -10,4 +10,6 @@ let ItemWindow = function ({id,img_link,description,price}) {
 
 export default ItemWindow;
 
+// Button that lets you add to cart!
+
 // image path determined from index.html!
