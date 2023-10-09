@@ -2,8 +2,9 @@ import useFetch from "react-fetch-hook";
 import ItemWindow from "./item_window";
 import '../css/items.css';
 
-let ItemRequest = function ({category,subCategory}) {
+let ItemRequest = function ({masterCategory,category,subCategory}) {
     let categoryObject = {
+        masterCategory,
         category,
         subCategory
     }
@@ -24,7 +25,7 @@ let ItemRequest = function ({category,subCategory}) {
 
 let ItemArray = function ({array}){
     // array is an array with objects
-    let collection= [];
+    let collection = [];
     array.forEach((item) => collection.push(<ItemWindow key={`Item_${item.Id}`} id={`Item_${item.Id}`} img_link={item.Image_Link} description={item.Description} price={item.Price}/>));
     return (
         <div className="itemArray">

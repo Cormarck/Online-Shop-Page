@@ -8,14 +8,6 @@ export let Item = sequelize.define("items", {
             autoIncrement: true,
             primaryKey: true,
           },
-    /*Category: {
-            type: DataTypes.STRING,
-            allowNull:  false,
-          },
-    Sub_Category: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },*/
     Description: {
             type: DataTypes.STRING,
             allowNull: false,

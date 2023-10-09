@@ -12,7 +12,7 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 
 // Category Setup
-import {Category,Sub_Category} from "./models/category.js";
+import {Category,Master_Category,Sub_Category} from "./models/category.js";
 
 // paypal setup
 import PAYPAL from "./js/paypal.js";
@@ -56,6 +56,7 @@ sequelize.sync( )
     res.json({url});
 })*/
 
+// Paypal integration ---------------------------------------------------------------------------
 // GET_OPTIONS_OBJECT
 SERVER.get("/getPaypalOptions", (req,res) => {
     const Options = {
@@ -66,7 +67,6 @@ SERVER.get("/getPaypalOptions", (req,res) => {
 
     res.send(Options);
 })
-
 // CREATE_ORDER_____
 SERVER.post('/create_order', async (req,res) => {
     let shoppingCart = req.body.shoppingCartArray; //shoppingCart => [{id:1,amount:2},{id:2,amount:4},{id:3,amount:3},...]
@@ -117,8 +117,6 @@ SERVER.post('/create_order', async (req,res) => {
     let id = order.id; // res for createOrder is already json
     res.send({id}); // Only ID of the Response is needed in the Browser!
 })
-
-
 // GET_PAYMENT______
 // happens after the payment was approved and the popUp Window closes
 SERVER.post('/complete_order', async (req,res) => {
@@ -127,19 +125,24 @@ SERVER.post('/complete_order', async (req,res) => {
     let payment = await PAYPAL.capturePayment(orderID,INTENT);
     res.send(payment); // res from capturePayment is already json
 })
-//---------------------------------------------
+//-----------------------------------------------------------------------------------------------
 
 SERVER.post('/get_items', async (req,res) => {
+    let masterCategory = req.body.masterCategory;
     let category = req.body.category;
     let subCategory = req.body.subCategory;
 
     let ItemArray = await Item.findAll({
-        where: (category !== 'All') ? {categoryName : category} : {},
+        where: (masterCategory !== 'All') ? {masterCategoryName : masterCategory} : {},
         raw:true,
-        attributes: ["Id","subCategoryName","Description","Price","Image_Link"]
-
-        // next add filter for sub category!
+        attributes: ["Id","categoryName","subCategoryName","Description","Price","Image_Link"]
     })
+
+    if (category !=='All') {
+        let output = [];
+        ItemArray.forEach(item => {if (item.categoryName === category) {output.push(item)}});
+        ItemArray = output;
+    }
 
     if (subCategory !== 'All') {
         let output = [];
@@ -150,12 +153,21 @@ SERVER.post('/get_items', async (req,res) => {
     res.json(ItemArray);
 } )
 
-SERVER.get('/getCategorys', async (req,res) =>{
-    let categoryArray = await Category.findAll ({
+SERVER.get('/getMasterCategorys', async (req,res) => {
+    let  masterCategoryArray = await Master_Category.findAll({
         raw: true,
         attributes: ["Name"]
     });
-    res.json(categoryArray)
+    res.json(masterCategoryArray);
+
+})
+
+SERVER.get('/getCategorys', async (req,res) =>{
+    let categoryArray = await Category.findAll ({
+        raw: true,
+        attributes: ["Name","masterCategoryName"/**/]
+    });
+    res.json(categoryArray);
 } )
 
 SERVER.get('/getSubCategorys', async (req,res) => {
@@ -163,7 +175,7 @@ SERVER.get('/getSubCategorys', async (req,res) => {
         raw: true,
         attributes:["Name","categoryName"],
     });
-    res.json(subCategoryArray)
+    res.json(subCategoryArray);
 })
 
 // Server Start -------------------------
