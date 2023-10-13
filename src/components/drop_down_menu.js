@@ -9,8 +9,8 @@ import { removeClass, toggleClass} from "./usefull_functions.js";
         let res = await fetch('/getMasterCategorys', {
             method: "get",
         });
-    masterCategoryArray = await res.json();
-    console.log(masterCategoryArray);
+        masterCategoryArray = await res.json();
+        console.log("master-category", masterCategoryArray);
     }
     await getMasterCategorys();
 
@@ -22,7 +22,7 @@ import { removeClass, toggleClass} from "./usefull_functions.js";
         });
     categoryArray = await res.json();
     // res is array of categorys
-    console.log(categoryArray);
+    console.log("category", categoryArray);
     /*categorys.forEach(item => {categoryArray.push(item.Name) });*/
     }
     await getCategorys();
@@ -35,7 +35,7 @@ import { removeClass, toggleClass} from "./usefull_functions.js";
             method: "get",
         });
     subCategoryArray = await res.json();
-    console.log(subCategoryArray)
+    console.log("sub-category", subCategoryArray)
     }
     await getSubCategorys();
     // subCategoryArray = [{Name: ..., categoryName: ...}, ...]
@@ -43,20 +43,17 @@ import { removeClass, toggleClass} from "./usefull_functions.js";
 
 let DropDownMenu = function ({setMasterCategory,setCategory,setSubCategory}) {
 
-    
-    
-
     // creates ARray with buttons to select a master category
     let masterCategoryDivArray = [];
     masterCategoryDivArray.push (<div onClick={() => {setMasterCategory('All'); setCategory('All'); setSubCategory('All');    setCategoryDivArray([]); setSubCategoryDivArray([]);    setDisplayedMasterCategory('');setDisplayedCategory('');setDisplayedSubCategory('') }}>All</div>)
-    masterCategoryArray.forEach(item => {masterCategoryDivArray.push(<div className="masterCategory" key={item.name} onClick={() => {setMasterCategory(item.Name); setCategory('All'); setSubCategory('All');       filterCategoryArray(item.Name); setSubCategoryDivArray([]);         setDisplayedMasterCategory(item.Name);setDisplayedCategory('');setDisplayedSubCategory('');     removeClass('.categoryArray','hide')}}>{item.Name}</div>)})
+    masterCategoryArray.forEach(item => {masterCategoryDivArray.push(<div className="masterCategory" key={item.Name + item.Id} onClick={() => {setMasterCategory(item.Id); setCategory('All'); setSubCategory('All');       filterCategoryArray(item.Id); setSubCategoryDivArray([]);         setDisplayedMasterCategory(item.Name);setDisplayedCategory('');setDisplayedSubCategory('');     removeClass('.categoryArray','hide')}}>{item.Name}</div>)})
 
     // creates Array with buttons to select a category
     let [categoryDivArray,setCategoryDivArray] =useState([])
     let filterCategoryArray = function (filter) {
         let filteredArray = [];
         filteredArray.push(<div onClick={() => {setCategory('All'); setSubCategory('All');                  setSubCategoryDivArray([]);                   setDisplayedCategory('');setDisplayedSubCategory('')}}>All</div>)
-        categoryArray.forEach(item => {if (item.masterCategoryName === filter) {filteredArray.push(<div className="category" key={item.Name} onClick={() => {setCategory(item.Name); setSubCategory('All');         filterSubCategory(item.Name);           setDisplayedCategory(item.Name);setDisplayedSubCategory('');    removeClass('.subCategoryArray','hide')}}>{item.Name}</div>)}});
+        categoryArray.forEach(item => {if (item.masterCategoryId === filter) {filteredArray.push(<div className="category" key={item.Name + item.Id} onClick={() => {setCategory(item.Id); setSubCategory('All');         filterSubCategory(item.Id);           setDisplayedCategory(item.Name);setDisplayedSubCategory('');    removeClass('.subCategoryArray','hide')}}>{item.Name}</div>)}});
         setCategoryDivArray([...filteredArray]);
     }
     //------------------------------------------------------------------------------
@@ -66,7 +63,7 @@ let DropDownMenu = function ({setMasterCategory,setCategory,setSubCategory}) {
     let filterSubCategory = function(filter) {
         let filteredArray = [];
         filteredArray.push(<div onClick={() => {setSubCategory('All'); setDisplayedSubCategory('')}}>All</div>)
-        subCategoryArray.forEach(item => {if (item.categoryName === filter) {filteredArray.push(<div className="subCategory" key={item.Name} onClick={() => {setSubCategory(item.Name); setDisplayedSubCategory(item.Name)}}>{item.Name}</div>)}});
+        subCategoryArray.forEach(item => {if (item.categoryId === filter) {filteredArray.push(<div className="subCategory" key={item.Name + item.Id} onClick={() => {setSubCategory(item.Id); setDisplayedSubCategory(item.Name)}}>{item.Name}</div>)}});
         setSubCategoryDivArray([...filteredArray]);
     }
     // ------------------------------------------------------------------------------

@@ -18,4 +18,6 @@ let ShoppingWindow = function () {
         )
 }
 
+//
+
 export default ShoppingWindow;

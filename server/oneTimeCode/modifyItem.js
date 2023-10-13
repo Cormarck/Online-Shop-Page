@@ -15,12 +15,13 @@ Item.belongsTo(Master_Category);
 Category.belongsTo(Master_Category);
 
 
-let createItem = async function () {
-    let item = await Item.create( {
-            Description : "M: A C: 2 S: a #1",
-            Price: 12.03,
-        });
-    //
+let modifyItem = async function () {
+    
+    let item = await Item.findOne({
+        where: {
+            Id: "5",
+        }
+    });
     let masterCategory = await Master_Category.findOne({
             where: {
                 Id: "1",
@@ -37,21 +38,18 @@ let createItem = async function () {
     // Model that "has many" .add Model that "belongs to" ; careful, table adds 's' to names of Model
     let subCategory = await Sub_Category.findOne({
             where: {
-                Id:"4",
+                Id: "4",
             }
         });
     subCategory.addItems(item);  
 }
 
-let createMasterCategory = function () {
-    Master_Category.create({
-        Name: /*"Super-Uber-Duper-Category"*/"Super-Mega-Ultimate-Category"
-    })
-}
 
-let createCategory = async function () {
-    let category = await Category.create( {
-        Name: "Test B2",
+let modifyCategory = async function () {
+    let category = await Category.findOne({
+        where: {
+            Id: "4",  
+        }   
     });
     let masterCategory = await Master_Category.findOne({
         where: {
@@ -61,9 +59,11 @@ let createCategory = async function () {
     masterCategory.addCategorys(category);
 }
 
-let createSubCategory = async function () {
-    let subCategory = await Sub_Category.create( {
-        Name: "Sub A2b",
+let modifySubCategory = async function () {
+    let subCategory = await Sub_Category.findOne( {
+        where: {
+            Id: "7", 
+        }  
     });
     let category = await Category.findOne({
         where: {
@@ -73,8 +73,7 @@ let createSubCategory = async function () {
     category.addSubCategorys(subCategory);
 }
 
-sequelize.sync(/*{force: true}*/)
-/*.then(() => createMasterCategory());*/
-/*.then(() => createCategory());*/
-/*.then(() => createSubCategory());*/
-.then(() => createItem());/**/
+sequelize.sync({/*force: true*/})
+/*.then(() => modifyCategory());*/
+/*.then(() => modifySubCategory());*/
+.then(() => modifyItem());/**/

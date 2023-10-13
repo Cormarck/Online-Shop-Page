@@ -24,9 +24,13 @@ let ItemRequest = function ({masterCategory,category,subCategory}) {
 }
 
 let ItemArray = function ({array}){
+    console.log("return",array);
     // array is an array with objects
     let collection = [];
-    array.forEach((item) => collection.push(<ItemWindow key={`Item_${item.Id}`} id={`Item_${item.Id}`} img_link={item.Image_Link} description={item.Description} price={item.Price}/>));
+
+    // devide into sub specifications!
+
+    array.forEach((item) => collection.push(<ItemWindow key={`Item_${item.Id}`} id={`Item_${item.Id}`} img_link={item.specificationArray.Image_Link} description={item.item.Description} price={item.item.Price}/>));
     return (
         <div className="itemArray">
             {collection}

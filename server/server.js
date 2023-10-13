@@ -1,9 +1,7 @@
 // Server Set Up -----------------------------
 import express from "express";
 // Sequelize Setup
-import {sequelize} from "./models/index.js";
-// Sequelize Operators
-import { Op } from "sequelize";
+
 // for reading .env file
 import "dotenv/config";
 
@@ -11,15 +9,30 @@ import "dotenv/config";
 import path from 'path';
 import {fileURLToPath} from 'url';
 
+import {sequelize} from "./models/index.js";
+// Sequelize Operators
+import { Op } from "sequelize";
 // Category Setup
 import {Category,Master_Category,Sub_Category} from "./models/category.js";
+import { Item, Item_Specification } from "./models/items.js";
 
 // paypal setup
 import PAYPAL from "./js/paypal.js";
-import { Item } from "./models/items.js";
 const INTENT = PAYPAL.INTENT;
 const CURRENCY = PAYPAL.CURRENCY;
 
+// sequelize relations
+Category.hasMany(Item);
+Item.belongsTo(Category);
+Sub_Category.hasMany(Item);
+Item.belongsTo(Sub_Category);
+Category.hasMany(Sub_Category);
+Sub_Category.belongsTo(Category);
+
+Master_Category.hasMany(Item);
+Master_Category.hasMany(Category);
+Item.belongsTo(Master_Category);
+Category.belongsTo(Master_Category);
 
 // ------------------------------------------------------------------
 
@@ -43,7 +56,7 @@ SERVER.get('/*',function(req,res) {
 // -------------------------------------------
 
 // initialize DB ------------------------
-sequelize.sync( )
+sequelize.sync(/*{alter: true}*/)
 .then(() => console.log("Tabelle erstellt"))/**/
 
 // -------------------------------------------
@@ -133,30 +146,50 @@ SERVER.post('/get_items', async (req,res) => {
     let subCategory = req.body.subCategory;
 
     let ItemArray = await Item.findAll({
-        where: (masterCategory !== 'All') ? {masterCategoryName : masterCategory} : {},
+        where: (masterCategory !== 'All') ? {masterCategoryId : masterCategory} : {},
         raw:true,
-        attributes: ["Id","categoryName","subCategoryName","Description","Price","Image_Link"]
+        attributes: ["Id","categoryId","subCategoryId","Description","Price"]
     })
 
     if (category !=='All') {
         let output = [];
-        ItemArray.forEach(item => {if (item.categoryName === category) {output.push(item)}});
+        ItemArray.forEach(item => {if (item.categoryId === category) {output.push(item)}});
         ItemArray = output;
     }
 
     if (subCategory !== 'All') {
         let output = [];
-        ItemArray.forEach((item) => {if (item.subCategoryName === subCategory) {output.push(item)}});
+        ItemArray.forEach((item) => {if (item.subCategoryId === subCategory) {output.push(item)}});
         ItemArray = output;
     }
+
+
+    let helpArray = [];
+    let findSpecification = async () => {
+    let i= 0;
+    while (i < ItemArray.length) {
+        let specificationArray = await Item_Specification.findAll({
+                where: {
+                    itemId: ItemArray[i].Id,
+                },
+                raw: true,
+                attributes: ["id", "Image_Link", "Amount", "Color", "Size"]
+            });
+            helpArray.push({ item:ItemArray[i] , specificationArray });
+            i++;
+        };
+    };
+    findSpecification()
+    .then(() => {res.json(helpArray);});
     
-    res.json(ItemArray);
-} )
+
+    
+} )/**/
 
 SERVER.get('/getMasterCategorys', async (req,res) => {
     let  masterCategoryArray = await Master_Category.findAll({
         raw: true,
-        attributes: ["Name"]
+        attributes: ["Id","Name"]
     });
     res.json(masterCategoryArray);
 
@@ -165,7 +198,7 @@ SERVER.get('/getMasterCategorys', async (req,res) => {
 SERVER.get('/getCategorys', async (req,res) =>{
     let categoryArray = await Category.findAll ({
         raw: true,
-        attributes: ["Name","masterCategoryName"/**/]
+        attributes: ["Id","Name","masterCategoryId"/**/]
     });
     res.json(categoryArray);
 } )
@@ -173,7 +206,7 @@ SERVER.get('/getCategorys', async (req,res) =>{
 SERVER.get('/getSubCategorys', async (req,res) => {
     let subCategoryArray = await Sub_Category.findAll ({
         raw: true,
-        attributes:["Name","categoryName"],
+        attributes:["Id","Name","categoryId"],
     });
     res.json(subCategoryArray);
 })
